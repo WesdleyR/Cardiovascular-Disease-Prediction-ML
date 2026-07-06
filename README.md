@@ -1,80 +1,75 @@
-# Predição de Doença Cardiovascular com Aprendizado de Máquina
+Cardiovascular Disease Prediction Using Machine Learning
 
-Comparação entre três algoritmos de aprendizado supervisionado — **Regressão Logística**, **Random Forest** e **SVM** — aplicados à predição de doença cardiovascular, com redução de dimensionalidade (PCA), validação cruzada estratificada e otimização de hiperparâmetros via GridSearchCV.
+Comparison of three supervised machine learning algorithms — Logistic Regression, Random Forest, and Support Vector Machine (SVM) — applied to cardiovascular disease prediction, using dimensionality reduction (PCA), stratified cross-validation, and hyperparameter optimization with GridSearchCV.
 
-## Escopo do projeto
-
-- [x] **Dataset:** [Cardiovascular Disease Dataset](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset) (Kaggle, ~70.000 registros)
-- [x] **Pelo menos 3 algoritmos supervisionados:** Regressão Logística, Random Forest e SVM
-- [x] **Validação cruzada + busca de hiperparâmetros:** `StratifiedKFold` (k=5) + `GridSearchCV`
-- [x] **Redução de dimensionalidade:** PCA (seleção automática de componentes para ≥ 95% de variância explicada)
-- [x] **Comparação entre modelos:** notebook dedicado consolidando os resultados dos 3 algoritmos
-- [x] **Métricas adequadas ao problema:** acurácia, precisão, recall, F1-score, ROC-AUC, matriz de confusão e curva ROC
-
-## Estrutura do repositório
-├── 1 - Regressao Logistica.ipynb      # Pipeline completo + modelo de Regressão Logística
-├── 2 - Random Forest.ipynb            # Pipeline completo + modelo de Random Forest
-├── 3 - SVM.ipynb                      # Pipeline completo + modelo de SVM
-├── 4 - Codigo Final Comparacao.ipynb  # Consolidação e comparação dos 3 modelos
+Project Scope
+ Dataset: Cardiovascular Disease Dataset (Kaggle, ~70,000 records)
+ At least three supervised algorithms: Logistic Regression, Random Forest, and SVM
+ Cross-validation + hyperparameter tuning: StratifiedKFold (k=5) + GridSearchCV
+ Dimensionality reduction: PCA (automatic component selection to retain ≥95% explained variance)
+ Model comparison: dedicated notebook consolidating the results of all three algorithms
+ Evaluation metrics: Accuracy, Precision, Recall, F1-score, ROC-AUC, Confusion Matrix, and ROC Curve
+Repository Structure
+├── 1 - Logistic Regression.ipynb     # Complete pipeline + Logistic Regression model
+├── 2 - Random Forest.ipynb           # Complete pipeline + Random Forest model
+├── 3 - SVM.ipynb                     # Complete pipeline + SVM model
+├── 4 - Final Comparison.ipynb        # Consolidated comparison of the three models
 └── README.md
 
-Cada um dos três notebooks de algoritmo é **autocontido** e segue exatamente o mesmo pipeline de dados, garantindo que os três modelos sejam avaliados sob condições idênticas.
+Each of the three algorithm notebooks is self-contained and follows exactly the same data processing pipeline, ensuring that all models are evaluated under identical conditions.
 
-## Dataset
+Dataset
+Source: Cardiovascular Disease Dataset (sulianova, Kaggle)
+Size: ~70,000 records, 11 input features + 1 target variable (cardio)
+Features: age, gender, height, weight, systolic/diastolic blood pressure, cholesterol, glucose, smoking status, alcohol consumption, and physical activity
+Data Preprocessing Pipeline
 
-- **Fonte:** [Cardiovascular Disease Dataset](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset) (sulianova, Kaggle)
-- **Tamanho:** ~70.000 registros, 11 atributos de entrada + 1 variável-alvo (`cardio`)
-- **Atributos:** idade, gênero, altura, peso, pressão arterial sistólica/diastólica, colesterol, glicose, tabagismo, consumo de álcool, atividade física
+The following preprocessing steps were applied identically across all three algorithm notebooks:
 
-## Pipeline de pré-processamento
+Converted age from days to years
+Feature engineering:
+Body Mass Index (BMI)
+Pulse Pressure
+Mean Arterial Pressure (MAP)
+Systolic/Diastolic Ratio
+Obesity Indicator
+Composite Risk Score
+Removed physiologically invalid outliers (e.g., systolic pressure lower than diastolic pressure, implausible height and weight values)
+Standardized numerical features using StandardScaler
+Applied dimensionality reduction with PCA (≥95% explained variance)
+Performed a fixed train/test split (random_state=42), identical across all notebooks
+Models and Optimization
+Step	Method
+Cross-validation	StratifiedKFold(n_splits=5)
+Hyperparameter tuning	GridSearchCV
+Algorithms	LogisticRegression, RandomForestClassifier, SVC
 
-Aplicado de forma idêntica nos três notebooks de algoritmo:
+Note on the SVM model: Due to the computational cost of SVM in the Google Colab environment, GridSearchCV was performed on a stratified subsample of approximately 6,000 instances. The final model was then retrained on the full PCA-transformed training set, ensuring a fair comparison with the other algorithms.
 
-1. Conversão da idade de dias para anos
-2. Engenharia de atributos: **IMC**, **pressão de pulso**, **pressão arterial média (MAP)**, **razão sistólica/diastólica**, **indicador de obesidade** e **escore de risco composto**
-3. Remoção de outliers fisiologicamente inválidos (ex.: pressão sistólica menor que a diastólica, alturas/pesos fora de faixas plausíveis)
-4. Padronização das variáveis numéricas com `StandardScaler`
-5. Redução de dimensionalidade com `PCA` (≥ 95% de variância explicada)
-6. Divisão treino/teste fixa (`random_state=42`), idêntica entre os três notebooks
+Results
+Model	Accuracy	Precision	Recall	F1-score	ROC-AUC
+Random Forest	0.7326	0.7502	0.6891	0.7183	0.8001
+Logistic Regression	0.7281	0.7532	0.6699	0.7091	0.7918
+SVM	0.7296	0.7750	0.6388	0.7004	0.7916
 
-## Modelos e otimização
+Metrics were computed on the same test set (13,723 samples) for all three models.
 
-| Etapa | Ferramenta |
-|---|---|
-| Validação cruzada | `StratifiedKFold(n_splits=5)` |
-| Busca de hiperparâmetros | `GridSearchCV` |
-| Algoritmos | `LogisticRegression`, `RandomForestClassifier`, `SVC` |
+The Random Forest model achieved the best overall balance across the evaluation metrics, obtaining the highest Recall and ROC-AUC. The SVM achieved the highest Precision, at the cost of a lower Recall. Logistic Regression delivered competitive intermediate performance across nearly all metrics, suggesting that the decision boundary between patients with and without cardiovascular disease is largely close to linear for this dataset.
 
-> **Nota sobre o SVM:** devido ao custo computacional em ambiente Colab, o `GridSearchCV` foi executado sobre uma subamostra estratificada de ~6.000 exemplos. O modelo final foi retreinado sobre o conjunto de treino completo, já projetado pelo PCA, garantindo comparabilidade com os demais algoritmos.
+A complete comparison—including summary tables, bar charts, and a heatmap—is available in the notebook 4 - Final Comparison.ipynb.
 
-## Resultados
+How to Run
+Open any notebook in Google Colab.
+Run the cells sequentially. The dataset is downloaded automatically using kagglehub (or the CSV file can be uploaded manually).
+To reproduce the final comparison, first execute the three algorithm notebooks and then run 4 - Final Comparison.ipynb.
+Technologies
+Python
+scikit-learn (GridSearchCV, StratifiedKFold, PCA, StandardScaler)
+pandas
+NumPy
+Matplotlib
+Seaborn
+kagglehub
+Author
 
-| Modelo | Acurácia | Precisão | Recall | F1-score | ROC-AUC |
-|---|---|---|---|---|---|
-| Random Forest | 0,7326 | 0,7502 | 0,6891 | 0,7183 | 0,8001 |
-| Regressão Logística | 0,7281 | 0,7532 | 0,6699 | 0,7091 | 0,7918 |
-| SVM | 0,7296 | 0,7750 | 0,6388 | 0,7004 | 0,7916 |
-
-*Métricas calculadas sobre o mesmo conjunto de teste (13.723 registros) para os três modelos.*
-
-O **Random Forest** apresentou o melhor equilíbrio geral entre as métricas, com o maior recall e o maior ROC-AUC. O **SVM** obteve a maior precisão, às custas de um recall mais baixo. A **Regressão Logística** teve desempenho intermediário e competitivo em quase todas as métricas, indicando que a fronteira de decisão entre pacientes com e sem doença cardiovascular é predominantemente próxima de linear neste dataset.
-
-A comparação completa (tabela, gráfico de barras e heatmap) está disponível no notebook `4 - Codigo Final Comparacao.ipynb`.
-
-## Como executar
-
-1. Abra qualquer um dos notebooks no [Google Colab](https://colab.research.google.com/)
-2. Execute as células em ordem — o dataset é baixado automaticamente via `kagglehub` (ou pode ser feito upload manual do CSV)
-3. Para reproduzir a comparação final, execute primeiro os três notebooks de algoritmo e depois o notebook `4 - Codigo Final Comparacao.ipynb`
-
-## Tecnologias
-
-- Python
-- scikit-learn (`GridSearchCV`, `StratifiedKFold`, `PCA`, `StandardScaler`)
-- pandas / numpy
-- matplotlib / seaborn
-- kagglehub
-
-## Autor
-
-**WesdleyR**
+WesdleyR
