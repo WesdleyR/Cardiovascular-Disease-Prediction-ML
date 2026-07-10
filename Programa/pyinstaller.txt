@@ -1,0 +1,1 @@
+pyinstaller --noconfirm --onefile --windowed --icon "C:\Users\wrp\Downloads\Projetos\Cardiovascular Disease\heart.ico" --name "Doença Cardiovascular" --add-data "C:\Users\wrp\Downloads\Projetos\Cardiovascular Disease\Modelos;Modelos/" --collect-all "sklearn"  "C:\Users\wrp\Downloads\Projetos\Cardiovascular Disease\main.py"

@@ -1,0 +1,7 @@
+# requirements.txt
+
+PySide6
+numpy
+pandas
+scikit-learn
+joblib
